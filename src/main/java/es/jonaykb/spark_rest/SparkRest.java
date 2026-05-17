@@ -101,7 +101,7 @@ public class SparkRest {
             try {
                 if (spark == null) {
                     String response = "Spark not found or not loaded. Wait until the server is fully started.";
-                    exchange.sendResponseHeaders(500, response.length());
+                    exchange.sendResponseHeaders(500, response.getBytes(StandardCharsets.UTF_8).length);
                     OutputStream os = exchange.getResponseBody();
                     os.write(response.getBytes(StandardCharsets.UTF_8));
                     os.close();
