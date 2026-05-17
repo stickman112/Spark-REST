@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 
@@ -30,11 +31,13 @@ public class SparkRest {
 
     private Spark spark;
     private static final Logger LOGGER = LogUtils.getLogger();
+    private HttpServer server = null;
 
     public SparkRest() {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON,
                 ModConfig.COMMON_CONFIG);
         MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStopping);
     }
 
     private void onServerStarting(ServerStartingEvent event) {
@@ -53,9 +56,17 @@ public class SparkRest {
         startHttpServer();
     }
 
+    private void onServerStopping(ServerStoppingEvent event) {
+        if (server != null) {
+            server.stop(0);
+            server = null;
+            LOGGER.info("Spark REST API stopped");
+        }
+    }
+
     private void startHttpServer() {
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(getPort()), 0);
+            server = HttpServer.create(new InetSocketAddress(getPort()), 0);
             server.createContext("/" + getEndpoint(), new MetricsHandler());
             server.setExecutor(null);
             server.start();
