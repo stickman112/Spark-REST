@@ -66,11 +66,11 @@ public class SparkRest {
 
     private void startHttpServer() {
         try {
-            server = HttpServer.create(new InetSocketAddress(getPort()), 0);
+            server = HttpServer.create(new InetSocketAddress(getBindHost(), getPort()), 0);
             server.createContext("/" + getEndpoint(), new MetricsHandler());
             server.setExecutor(null);
             server.start();
-            LOGGER.info("Spark REST API started on port {}, using endpoint {}", getPort(), getEndpoint());
+            LOGGER.info("Spark REST API started on {}:{}/{}", getBindHost(), getPort(), getEndpoint());
         } catch (Exception e) {
             LOGGER.error("Failed to start Spark REST API", e);
         }
@@ -126,6 +126,10 @@ public class SparkRest {
 
     private int getPort() {
         return ModConfig.PORT.get();
+    }
+
+    private String getBindHost() {
+        return ModConfig.BIND_HOST.get();
     }
 
     private String getEndpoint() {
