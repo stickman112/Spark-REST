@@ -29,3 +29,6 @@ forge*changelog.txt
 
 # Local working state (not source)
 .claude-checkpoint.md
+
+# Claude Code context file (local only, not published)
+CLAUDE.md
